@@ -441,7 +441,7 @@ body.book #toc,body.book #preamble,body.book h1.sect0,body.book .sect1>h2{page-b
 <div id="preamble">
 <div class="sectionbody">
 <div class="paragraph">
-<p>Template Cache Transformer is a <a href="https://www.dartlang.org/tools/pub/">Pub</a> transformer intended to be used with AngularDart applications. It creates a <a href="https://docs.angulardart.org">template cache</a> containing all HTML and CSS files referenced by AngularDart components. In turn template cache helps to avoid downloading HTML views and CSS files for each individual component, reduces the number of HTTP requests made by an application and the time of page rendering.</p>
+<p>The Template Cache Transformer generates the <a href="https://docs.angulardart.org/#angular/angular-core.TemplateCache">template cache</a> and optionally merges the CSS and HTML of AngularDart components into a hosting Web page. This substantially speeds up the Web page loading by eliminating the need  for the browser to make multiple server requests for downloading component dependencies.</p>
 </div>
 </div>
 </div>
