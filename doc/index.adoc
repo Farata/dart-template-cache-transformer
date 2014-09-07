@@ -8,7 +8,7 @@ Farata Systems LLC. <info@faratasystems.com>
 :source-highlighter: highlightjs
 :toc:
 
-Template Cache Transformer is a https://www.dartlang.org/tools/pub/[Pub] transformer intended to be used with AngularDart applications. It creates a https://docs.angulardart.org[template cache] containing all HTML and CSS files referenced by AngularDart components. In turn template cache helps to avoid downloading HTML views and CSS files for each individual component, reduces the number of HTTP requests made by an application and the time of page rendering.
+The Template Cache Transformer generates the https://docs.angulardart.org/#angular/angular-core.TemplateCache[template cache] and optionally merges the CSS and HTML of AngularDart components into a hosting Web page. This substantially speeds up the Web page loading by eliminating the need  for the browser to make multiple server requests for downloading component dependencies.
 
 
 == Getting Started
