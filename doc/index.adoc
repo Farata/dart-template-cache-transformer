@@ -1,0 +1,114 @@
+= Template Cache Transformer
+Farata Systems LLC. <info@faratasystems.com>
+:icons: font
+:idprefix:
+:last-update-label!:
+:numbered!:
+:sectanchors:
+:source-highlighter: highlightjs
+:toc:
+
+Template Cache Transformer is a https://www.dartlang.org/tools/pub/[Pub] transformer intended to be used with AngularDart applications. It creates a https://docs.angulardart.org[template cache] containing all HTML and CSS files referenced by AngularDart components. In turn template cache helps to avoid downloading HTML views and CSS files for each individual component, reduces the number of HTTP requests made by an application and the time of page rendering.
+
+
+== Getting Started
+
+. Add `template_cache_transformer` to the `dev_dependencies` of your AngularDart application:
++
+.pubspec.yaml
+[source,yaml]
+----
+dev_dependencies:
+  template_cache_transformer: any
+----
+
+. Add `template_cache_transformer` to the `transformers` list and specify `entry_point` setting for the transformer. It should point to your `index.html` file:
++
+.pubspec.yaml
+[source,yaml]
+----
+transformers:
+- template_cache_transformer:
+    entry_point: my_app|web/index.html <1>
+----
+<1> Note, `entry_point` must be provided in AssetId format, more on this read <<option-entry-point,below>>.
+
+. Run `pub get` to download just added dependencies:
++
+[source,shell]
+----
+$ pub get
+Resolving dependencies...
++ template_cache_transformer 0.1.0
+Downloading template_cache_transformer 0.1.0...
+Changed 1 dependency!
+----
+
+. Run `pub build`. When the build completes you should be able to find file `template_cache.generated.html` inside `build/web/` directory. The generated cache should be also inserted in the HTML page you specified as the entry point right before closing `</head>` tag.
++
+[NOTE]
+====
+Make sure you have at least one AngularDart component in your application which uses `templateUrl` or `cssUrl` property to reference a file, otherwise `template_cache.generated.html` file will be empty. Example:
+
+[source,dart]
+----
+@Component(
+    selector: 'toggle-button',
+    templateUrl: 'packages/my_app/components/toggle_button.html')
+class ToggleButton {
+}
+----
+
+====
+
+
+== How It Works?
+
+The template cache transformer internally runs in two phases: `TemplateCacheGenerator` and `TemplateCacheWriter`:
+
+.Phase 1 (`TemplateCacheGenerator`):
+. Transformer finds the entry point of Dart application (`main()` function) and traverses the entire AST looking for AngularDart's `@Component` annotations.
+. For each `@Component` annotation it collects URIs referenced by `templateUrl` and `cssUrl` properties.
+. Then it reads assets referenced by the collected URIs and wraps the content of each asset into a `<template>` tag representing a template cache entry.
+. All cache entries created on the previous step are concatenated and written in a newly created asset - `web/template_cache.generated.html`.
+
+.Phase 2 (`TemplateCacheWriter`, runs only if `entry_point` is specified in `pubspec.yaml`):
+. Reads `web/template_cache.generated.html` asset generated in the phase 1 and inserts its content into an HTML page specified by `entry_point` setting in `pubspec.yaml` right before closing `</head>` tag.
+
+
+== Configuration Options
+
+[[option-dart-sdk]]
+.dart_sdk
+_Optional._ Transformer uses static code https://pub.dartlang.org/packages/analyzer[analyzer] which requires to know the path to Dart SDK to resolve Dart libraries. In most cases you don't need to specify this setting, Dart SDK is discovered automatically. But in rare cases transformer is not able to find Dart SDK (please, see discussion https://groups.google.com/a/dartlang.org/forum/#!topic/misc/cmbur7_B21Y[here]), to workaround this issue you can explicitly specify path using this setting.
+
+[[option-entry-point]]
+.entry_point
+_Optional._ Use to specify an entry point of your application. It must be a string referencing an HTML page. Usually it is `index.html`. The value must be provided in an `AssetId` https://api.dartlang.org/apidocs/channels/stable/dartdoc-viewer/barback/barback.AssetId#id_AssetId-parse[format]. Example: `my_app|web/index.html`, where `my_app` is the package name of your application. In future versions you should be able to specify only the path part.
+
+
+== FAQ
+
+=== Why asset can't be found?
+Sometimes you may see warning messages similar to this:
+
+[literal]
+[Warning from TemplateCacheGenerator]:
+Can't find asset lib/components/toggle_button.css.
+
+This may happen if the specified asset should be produced by some other transformer. For example if you reference CSS files in your `@Component` annotations, but actually uses LESS files for your stylesheets. Then LESS Transformer should be run before the Template Cache Transformer to make it work properly.
+
+
+=== Why Dart SDK can't be found?
+Sometimes you may see error messages similar to this:
+
+[literal]
+Error on line 8, column 3 of pubspec.yaml: Error loading transformer: Illegal argument(s): sdkDirectory must be provided.
+- template_cache_transformer
+  ^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+To workaround the issue explicitly specify `dart_sdk` option for the transformer. Please read more about this <<option-dart-sdk,above>>.
+
+
+=== Why entry point is optional?
+If entry point is specified generated template cache will be inserted into the main HTML page. But it's not necessarily the desired behavior. Sometimes you may want to load generated HTML file manually to control place and moment where and when to insert cached templates.

@@ -1,0 +1,14 @@
+name: template_cache_transformer
+version: 0.1.0
+author: Farata Systems LLC. <info@faratasystems.com>
+homepage: https://farata.github.io/dart-template-cache-transformer/
+
+description: >
+  Pub transformer which finds all AngularDart components used within
+  application and generates template cache for all the files
+  referenced by `@Component` annotation's `templateUrl` and `cssUrl`
+  properties.
+
+dependencies:
+  barback: '>=0.14.2 <0.16.0'
+  code_transformers: '>=0.1.4+2 <0.3.0'
