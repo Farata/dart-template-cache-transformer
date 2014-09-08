@@ -112,3 +112,10 @@ To workaround the issue explicitly specify `dart_sdk` option for the transformer
 
 === Why entry point is optional?
 If entry point is specified generated template cache will be inserted into the main HTML page. But it's not necessarily the desired behavior. Sometimes you may want to load generated HTML file manually to control place and moment where and when to insert cached templates.
+
+
+== Links
+icon:github[] https://github.com/Farata/dart-template-cache-transformer/[GitHub Repository] |
+icon:beer[] https://farata.github.io/dart-template-cache-transformer/[Pub package] |
+icon:book[] http://www.dartdocs.org/documentation/template_cache_transformer/latest[API Docs] |
+icon:refresh[] http://faratasystems.com[Farata Systems]
